@@ -1,0 +1,25 @@
+<head>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+
+  function studentHome(){
+    window.location.href='/studentHome'
+  };
+
+  function lecturerHome(){
+    window.location.href='/lecturerHome'
+  };
+
+</script>
+<h3> <strong>Welcome </strong> {{ user.name }}!<br></h3>
+<div align ="center">
+<body>
+<h2> Choose mode </h2>
+<br>
+  <img src='https://d30y9cdsu7xlg0.cloudfront.net/png/40364-200.png'  width="30%" height="65%"/>
+  <img src='https://d30y9cdsu7xlg0.cloudfront.net/png/44224-200.png'  width="30%" height="65%"/>
+  <br>
+  <button class="button" onclick="studentHome()"> Student mode </button>
+  <button class="button" onclick ="lecturerHome()"> Lecturer mode </button>
+
+</div>

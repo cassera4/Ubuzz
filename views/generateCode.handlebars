@@ -1,0 +1,78 @@
+<div align = center>
+  <h2> Generate Access Code </h2>
+  <script type="text/javascript" charset="utf-8" src="cordova-x.x.x.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script type = "text/javascript"></script>
+
+  <script>
+var socketio = io.connect('127.0.0.1:1337');
+    document.addEventListener('DOMContentLoaded', function(){
+                    if(!Notification) {
+                      alert("Notifications dont work");
+                      return;
+                    }
+                    if(Notification.permission !== "granted")
+                      Notification.requestPermission();
+                  });
+      function notifyMe(hello) {
+          if(Notification.permission !== "granted")
+            Notification.requestPermission();
+            else {
+           var notification = new Notification('You have recieved a buzz', {
+             icon: 'http://student.computing.dcu.ie/~cassera4/Red_Button.jpg',
+             body: hello,
+           });
+           notification.onclick = function() {
+             window.open("https://www.facebook.com/");
+           }
+         }
+       }
+
+  socketio.on("message_to_client", function(data) {
+   //document.getElementById("chatlog").innerHTML = ("<hr/>" +
+   //data['message'] + document.getElementById("chatlog").innerHTML);
+     //  alert("server has a msg for you");
+       notifyMe(data['message']);
+   });
+
+</script>
+<body>
+  <div  align = "center">
+  <script algin = center>
+  function generateCode(){
+    var code = document.getElementById('code').value;
+    //document.write(code);
+    console.log(code);
+    var d = new Date();
+    var m = d.getMinutes();
+    if(m < 10) {
+      m = '0' + m;
+    }
+
+      var gencode = code + d.getDate() + (d.getMonth()+1)+ (d.getYear()-100)+ d.getHours()+ m;
+      //console.log(code);
+      //document.write(gencode);
+      return gencode;
+  }
+
+
+      function displayCode(){
+        document.getElementById('codeGenerated').innerHTML = 'The code is: ' + generateCode();
+      }
+
+
+
+
+  </script>
+  <textarea id = "code" placeholder="Enter module code"></textarea>
+  <br>
+
+ <button Class = 'button' onclick = "displayCode()"> Generate Code </button>
+
+  <!--<h2> The code is: </h2> -->
+  <output id = "codeGenerated"></output>
+
+
+<!--  <button onclick="generateCode()"> BUZZ </button>-->
+</div>
+</div>
