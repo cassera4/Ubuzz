@@ -1,11 +1,52 @@
-<body>
+
+  <head>
+    <script type="text/javascript" charset="utf-8" src="cordova-x.x.x.js"></script>
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+ <link rel="stylesheet" href="/resources/demos/style.css">
+ <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+ <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type = "text/javascript"></script>
   <script>
+  var socketio = io.connect('127.0.0.1:1337');
+
+
+
+/*socketio.on('connect', function(data){
+    console.log("STUDENT ACCESS ");
+    var msg = document.getElementById("code").value;
+    socketio.emit("codeStu", { message : msg});
+
+  });*/
+  //ref https://www.w3schools.com/jsref/met_loc_reload.asp
+  socketio.on('wrongcode', function(){
+    //reference https://msdn.microsoft.com/en-us/library/system.net.sockets.socket.disconnect(v=vs.110).aspx
+    socketio.disconnect(true);
+
+
+  alert("WRONG CODE. Please try again");
+    location.reload();
+    });
+
+    socketio.on('rightcode',function(){
+      alert("Code Correct");
+      buzz();
+    })
+
+function sendCode(){
+  console.log("SEND CODE FROM STU");
+      var msg = document.getElementById("code").value;
+      socketio.emit('codeStu', { message : msg});
+    }
     function buzz(){
       window.location.href='/buzz'
     };
 
+
   </script>
   <div align = center>
+    <body>
     <h3> <strong>Enter the code please </strong> {{ user.name }}!<br></h3>
       <h1 align = "center"> </h1>
 
@@ -14,9 +55,8 @@
       <textarea id = "code" placeholder="Enter code here" required></textarea>
       <br>
       <br>
-
-
-      <button Class = 'button' onclick="buzz()" >Enter</button>
+      <!--  <output id = "code"></output>-->
+      <button Class = 'button'onclick = "sendCode()" >Enter</button>
 
     </div>
 </body>
