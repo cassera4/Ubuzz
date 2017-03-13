@@ -5,6 +5,7 @@
   <script type = "text/javascript"></script>
 
   <script>
+  //https://github.com/brenden/node-webshot reference
 var socketio = io.connect('127.0.0.1:1337');
     document.addEventListener('DOMContentLoaded', function(){
                     if(!Notification) {
@@ -23,10 +24,21 @@ var socketio = io.connect('127.0.0.1:1337');
              body: hello,
            });
            notification.onclick = function() {
-             window.open("https://www.facebook.com/");
+              socketio.emit('webshot',{});
+
            }
          }
        }
+
+
+      // socketio.on('connect', function(data){
+        function displayCode(){
+         console.log("LECTURE SEND CODE ");
+        document.getElementById('codeGenerated').innerHTML = generateCode();
+         var msg = document.getElementById('codeGenerated').value;
+         socketio.emit("code", { message : msg});
+       };
+
 
   socketio.on("message_to_client", function(data) {
    //document.getElementById("chatlog").innerHTML = ("<hr/>" +
@@ -34,6 +46,8 @@ var socketio = io.connect('127.0.0.1:1337');
      //  alert("server has a msg for you");
        notifyMe(data['message']);
    });
+
+
 
 </script>
 <body>
@@ -56,9 +70,9 @@ var socketio = io.connect('127.0.0.1:1337');
   }
 
 
-      function displayCode(){
+    /*  function displayCode(){
         document.getElementById('codeGenerated').innerHTML = 'The code is: ' + generateCode();
-      }
+      }*/
 
 
 
