@@ -5,47 +5,10 @@
     <script type = "text/javascript"></script>
 
     <script>
-      var socketio = io();
-      //.connect('127.0.0.1:1337');
-      /*socket.on('message', function(data){
-          console.log(data.message);
-      });
-      */
+  var socketio = io();
 
-      document.addEventListener('DOMContentLoaded', function(){
-                      if(!Notification) {
-                        alert("Notifications dont work");
-                        return;
-                      }
-                      if(Notification.permission !== "granted")
-                        Notification.requestPermission();
-                    });
-        function notifyMe(hello) {
-            if(Notification.permission !== "granted")
-              Notification.requestPermission();
-              else {
-             var notification = new Notification('You have recieved a buzz', {
-               icon: 'http://student.computing.dcu.ie/~cassera4/Red_Button.jpg',
-               body: hello,
-             });
-             notification.onclick = function() {
-               window.open("https://www.facebook.com/");
-             }
-           }
-         }
-
-    socketio.on("message_to_client", function(data) {
-     //document.getElementById("chatlog").innerHTML = ("<hr/>" +
-     //data['message'] + document.getElementById("chatlog").innerHTML);
-       //  alert("server has a msg for you");
-         notifyMe(data['message']);
-     });
-
-
-    /*socketio.on("new_msg", function(data) {
-     alert(data.msg);
-    }*/
     function sendMessage() {
+      console.log("STUDENT SEND MSG.. ");
           var msg = document.getElementById("message_input").value;
           socketio.emit("message_to_server", { message : msg});
 
@@ -69,6 +32,7 @@
                   <option>Can you please repeat</option>
                 </select>
                 <br>
+
                 <button type = "submit" name= "button" style="border:0; background: transparent " onclick="sendMessage()"><img src= 'http://blog.wsd.net/adwebster/files/2010/06/Big-Red-Button.png' width='150' height= '130' alt= "submit"/> </button>
               </form>
               <br>
