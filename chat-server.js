@@ -11,6 +11,8 @@ var LocalStrategy = require('passport-local').Strategy;
 var mongo = require('mongodb');
 //var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var webshot = require("webshot");
+
 
 //Initialise the application
 var app = express();
@@ -161,9 +163,9 @@ app.get('/lecturerHome', function(req, res){
 app.get('/buzz', function(req, res){
   res.render(__dirname + '/views/buzz');
 });
-app.get('/generateCode', function(req, res){
+/*app.get('/generateCode', function(req, res){
   res.render(__dirname + '/views/generateCode');
-});
+});*/
 app.get('/logout',function(req,res){
     req.session.destroy(function(err){
         if(err){
@@ -291,106 +293,15 @@ function ensureAuthenticated(req, res, next){
   }
 }
 //********
-
-
-
-
-/*var exphbs = require('express-handlebars');
-app.engine('handlebars', exphbs({defaultLayout: 'layout'}));
-app.set('view engine', 'handlebars');
-*/
-
-/*app.get('/', function (req, res, next) {
-  res.render('/Users/College/Documents/Thirdyear/PROJECT/PHONEGAP/test/www/views/index.handlebars');
-});
-app.get('/buzz', function (req, res, next) {
-  res.render('/Users/College/Documents/Thirdyear/PROJECT/PHONEGAP/test/www/views/buzz.handlebars');
-});
-app.get('/login', function (req, res, next) {
-  res.render('/Users/College/Documents/Thirdyear/PROJECT/PHONEGAP/test/www/views/login.handlebars');
-});
-app.get('/register', function (req, res, next) {
-  res.render('/Users/College/Documents/Thirdyear/PROJECT/PHONEGAP/test/www/register.handlebars');
-});
-app.get('/generateCode', function (req, res, next) {
-  res.render('/Users/College/Documents/Thirdyear/PROJECT/PHONEGAP/test/www/views/generateCode.handlebars');
-});
-app.get('/lectureAccess', function (req, res, next) {
-  res.render('/Users/College/Documents/Thirdyear/PROJECT/PHONEGAP/test/www/views/lectureAccess.handlebars');
-});*/
-
-
 server = http.createServer(app);
 server.listen(1337);
-    /*  var server = http.createServer(function(request, response){
-        var path = url.parse(request.url).pathname;
 
-   switch(path){
-       case '/':
-       fs.readFile('index.html', function(error, data){
-           if (error){
-               response.writeHead(404);
-               response.write("oppLs this doesn't exist - 404");
-               response.end();
-           }
-           else{
-               response.writeHead(200, {"Content-Type": "text/html"});
-               response.write(data, "utf8");
-               response.end();
-           }
-       });
-           break;
-       case '/buzz':
-           fs.readFile('buzz.html', function(error, data){
-               if (error){
-                   response.writeHead(404);
-                   response.write("opps this doesn't exist - 404");
-                   response.end();
-               }
-               else{
-                   response.writeHead(200, {"Content-Type": "text/html"});
-                   response.write(data, "utf8");
-                   response.end();
-               }
-           });
-           break;
-           case '/lectureHome':
-               fs.readFile('lectureHome.html', function(error, data){
-                   if (error){
-                       response.writeHead(404);
-                       response.write("opps this doesn't exist - 404");
-                       response.end();
-                   }
-                   else{
-                       response.writeHead(200, {"Content-Type": "text/html"});
-                       response.write(data, "utf8");
-                       response.end();
-                   }
-               });
-               break;
-       default:
-           response.writeHead(404);
-           response.write("opps this doesn't exist - 404");
-           response.end();
-           break;
-   }
-}).
-
-listen(1337);
-*/
 app.use(express.static(__dirname + '/public'));
-
-
-/*app.get('/generateCode', function(req,res){
-    res.sendfile('generateCode.html');
-});
-*/
 var io = require('socket.io').listen(server);
 var iol = io.listen(server);
-
-
 var clients = [ ] ;
 var socketsOfClients = {};
+var codelecture;
 //console.log(clients.length);
 io.on('connection', function (socket) {
 //client added here..
@@ -405,10 +316,51 @@ console.log(clients.length);
            //socket.broadcast.emit("message_to_client" , { message: socket.id + " says " + data["message"] });
 
          });
+         socket.on('code',function(data){
+           console.log("SERVER LECT CODE ");
+          codelecture = data["message"];
+           console.log(codelecture);
+           printGlobal();
+         });
+
+//REF:: http://stackoverflow.com/questions/18365771/socket-io-cant-change-a-global-variable-in-socket-on
+
+         function printGlobal(){
+          // console.log("FUNC :"+ codelecture);
+           return codelecture;
+         }
+           //console.log(codelecture);
+
+
+         socket.on('codeStu', function(data) {
+           console.log("STUDENT CODE SERVER ");
+           codelecture = printGlobal();
+           studentcode = data["message"];
+          console.log("STU lec: "+ codelecture);
+          console.log("STU stu: "+ studentcode);
+           if(studentcode !== codelecture){
+             console.log("WRONG");
+             socket.emit('wrongcode', {});
+
+           }
+           else{
+            socket.emit('rightcode',[]);
+
+           }
+         });
+
+//reference https://github.com/brenden/node-webshot
+
+         socket.on('webshot', function(){
+           var renderStream = webshot('http://www.computing.dcu.ie/~ray/teaching/CA226/01-intro.html#(1)');
+           var file = fs.createWriteStream('/CA226/01-intro.html.png', {encoding: 'binary'});
+          console.log("screenshot");
+           renderStream.on('data', function(data) {
+             file.write(data.toString('binary'), 'binary');
+           });
+         })
 
       socket.on('disconnect', function() {
-
-
              console.log('Got disconnect!');
               var index = clients.indexOf(socket);
               clients.pop(clients.id);
